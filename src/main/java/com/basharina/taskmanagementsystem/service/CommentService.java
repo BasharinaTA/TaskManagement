@@ -5,5 +5,5 @@ import com.basharina.taskmanagementsystem.model.entity.CommentEntity;
 
 public interface CommentService {
 
-    CommentEntity addComment(CommentDataDto comment, Integer id);
+    CommentEntity addCommentFromAuthor(CommentDataDto comment, Long id);
 }

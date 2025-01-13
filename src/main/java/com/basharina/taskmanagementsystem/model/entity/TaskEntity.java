@@ -21,7 +21,7 @@ public class TaskEntity {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer id;
+    private Long id;
 
     @Column(name = "header")
     private String header;
@@ -43,11 +43,11 @@ public class TaskEntity {
 
     @ManyToOne
     @JoinColumn(name = "author_id")
-    private ProfileEntity author;
+    private UserEntity author;
 
     @ManyToOne
     @JoinColumn(name = "executor_id")
-    private ProfileEntity executor;
+    private UserEntity executor;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private List<CommentEntity> comments;

@@ -6,20 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor
-public class TaskDto {
+public class TaskAuthorFilter {
 
-    private Long id;
     private String header;
-    private String description;
     private TaskStatus status;
     private Priority priority;
-    private String author;
-    private String executor;
-    private LocalDateTime created;
+    private Long executorId;
 }

@@ -2,12 +2,19 @@ package com.basharina.taskmanagementsystem.service;
 
 import com.basharina.taskmanagementsystem.converter.TaskDataConverter;
 import com.basharina.taskmanagementsystem.exception.BaseException;
+import com.basharina.taskmanagementsystem.model.Priority;
+import com.basharina.taskmanagementsystem.model.TaskStatus;
+import com.basharina.taskmanagementsystem.model.dto.AdminTaskUpdateDto;
+import com.basharina.taskmanagementsystem.model.dto.TaskAuthorFilter;
 import com.basharina.taskmanagementsystem.model.dto.TaskDataDto;
+import com.basharina.taskmanagementsystem.model.dto.TaskUpdateDto;
 import com.basharina.taskmanagementsystem.model.entity.CommentEntity;
-import com.basharina.taskmanagementsystem.model.entity.ProfileEntity;
 import com.basharina.taskmanagementsystem.model.entity.TaskEntity;
+import com.basharina.taskmanagementsystem.model.entity.UserEntity;
 import com.basharina.taskmanagementsystem.repository.TaskRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,35 +24,81 @@ import java.util.List;
 public class TaskServiceImpl implements TaskService {
 
     private TaskRepository taskRepository;
-    private ProfileService profileService;
+    private UserService userService;
     private TaskDataConverter taskDataConverter;
 
     @Override
-    public TaskEntity getById(Integer id) {
+    public TaskEntity getById(Long id) {
         return taskRepository.findById(id).orElseThrow(() ->
                 new BaseException(String.format("Задача с id = %d не найдена", id)));
     }
 
     @Override
-    public List<CommentEntity> getComments(Integer id) {
-        return getById(id).getComments();
+    public TaskEntity getByIdAndAuthor(Long id) {
+        UserEntity author = userService.getCurrentUser();
+        return taskRepository.findByIdAndAuthor(id, author).orElseThrow(() ->
+                new BaseException(String.format("Задача с id = %d не найдена", id)));
     }
 
     @Override
-    public List<TaskEntity> getAll() {
-        return taskRepository.findAll();
+    public TaskEntity getByIdAndExecutor(Long id) {
+        UserEntity executor = userService.getCurrentUser();
+        return taskRepository.findByIdAndExecutor(id, executor).orElseThrow(() ->
+                new BaseException(String.format("Задача с id = %d не найдена", id)));
+    }
+
+    @Override
+    public List<CommentEntity> getComments(Long id) {
+        return getByIdAndAuthor(id).getComments();
+    }
+
+    @Override
+    public Page<TaskEntity> getAllByAuthor(UserEntity author, Pageable pageable,
+                                           TaskAuthorFilter filter) {
+//        UserEntity executor = userService.getById(executorId);
+        return taskRepository.findAllByAuthor(author, pageable, filter.getHeader(), filter.getStatus(),
+                filter.getPriority(), filter.getExecutorId());
+    }
+
+    @Override
+    public Page<TaskEntity> getAllByExecutor(UserEntity executor, Pageable pageable, String header, TaskStatus status, Priority priority) {
+        return taskRepository.findAllByExecutor(executor, pageable, header, status, priority);
     }
 
     @Override
     public TaskEntity addTask(TaskDataDto taskDataDto) {
-        ProfileEntity executor = profileService.getById(taskDataDto.getExecutorId());
-        ProfileEntity author = profileService.getById(1);
+        UserEntity executor = userService.getById(taskDataDto.getExecutorId());
+        UserEntity author = userService.getCurrentUser();
         TaskEntity task = taskDataConverter.toEntity(taskDataDto, executor, author);
         return taskRepository.save(task);
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public TaskEntity updateTask(Long id, AdminTaskUpdateDto adminTaskUpdateDto) {
+        TaskEntity task = getByIdAndAuthor(id);
+        if (adminTaskUpdateDto.getStatus() != null) {
+            task.setStatus(adminTaskUpdateDto.getStatus());
+        }
+        if (adminTaskUpdateDto.getPriority() != null) {
+            task.setPriority(adminTaskUpdateDto.getPriority());
+        }
+        if (adminTaskUpdateDto.getExecutorId() != null) {
+            UserEntity executor = userService.getById(adminTaskUpdateDto.getExecutorId());
+            task.setExecutor(executor);
+        }
+        return taskRepository.save(task);
+    }
+
+    @Override
+    public TaskEntity updateTask(Long id, TaskUpdateDto taskUpdateDto) {
+        TaskEntity task = getByIdAndExecutor(id);
+        task.setStatus(taskUpdateDto.getStatus());
+        return taskRepository.save(task);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        getByIdAndAuthor(id);
         taskRepository.deleteById(id);
     }
 }

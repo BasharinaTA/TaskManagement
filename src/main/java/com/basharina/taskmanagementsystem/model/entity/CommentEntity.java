@@ -18,7 +18,7 @@ public class CommentEntity {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer id;
+    private Long id;
 
     @Column(name = "text")
     private String text;
@@ -32,6 +32,6 @@ public class CommentEntity {
     private TaskEntity task;
 
     @ManyToOne
-    @JoinColumn(name = "profile_id")
-    private ProfileEntity profile;
+    @JoinColumn(name = "author_id")
+    private UserEntity author;
 }

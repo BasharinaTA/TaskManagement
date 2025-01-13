@@ -3,8 +3,8 @@ package com.basharina.taskmanagementsystem.service;
 import com.basharina.taskmanagementsystem.converter.CommentDataConverter;
 import com.basharina.taskmanagementsystem.model.dto.CommentDataDto;
 import com.basharina.taskmanagementsystem.model.entity.CommentEntity;
-import com.basharina.taskmanagementsystem.model.entity.ProfileEntity;
 import com.basharina.taskmanagementsystem.model.entity.TaskEntity;
+import com.basharina.taskmanagementsystem.model.entity.UserEntity;
 import com.basharina.taskmanagementsystem.repository.CommentRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,14 +15,25 @@ public class CommentServiceImpl implements CommentService {
 
     private CommentRepository commentRepository;
     private TaskService taskService;
-    private ProfileService profileService;
+    private UserServiceImpl userService;
     private CommentDataConverter commentDataConverter;
 
     @Override
-    public CommentEntity addComment(CommentDataDto commentDataDto, Integer id) {
+    public CommentEntity addCommentFromAuthor(CommentDataDto commentDataDto, Long id) {
+        UserEntity user = userService.getCurrentUser();
         TaskEntity task = taskService.getById(id);
-        ProfileEntity profile = profileService.getById(1);
-        CommentEntity comment = commentDataConverter.toEntity(commentDataDto, task, profile);
+//        if (task.getAuthor().getEmail().equals(user.getEmail())) {
+            CommentEntity comment = commentDataConverter.toEntity(commentDataDto, task, user);
+//        }
+//        TaskEntity task = taskService.getByIdAndAuthor(id);
         return commentRepository.save(comment);
     }
+
+//    @Override
+//    public CommentEntity addCommentFromExecutor(CommentDataDto commentDataDto, Long id) {
+//        TaskEntity task = taskService.getByIdAndExecutor(id);
+//        UserEntity author = userService.getCurrentUser();
+//        CommentEntity comment = commentDataConverter.toEntity(commentDataDto, task, author);
+//        return commentRepository.save(comment);
+//    }
 }

@@ -10,6 +10,6 @@ import org.mapstruct.ReportingPolicy;
 public interface CommentConverter {
 
     @Mapping( target = "author", expression = """
-    java(comment.getProfile().getName() + " " + comment.getProfile().getSurname())""")
+    java(comment.getAuthor().getName() + " " + comment.getAuthor().getSurname())""")
     CommentDto toDto(CommentEntity comment);
 }
