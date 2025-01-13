@@ -1,11 +1,6 @@
 package com.basharina.taskmanagementsystem.service;
 
-import com.basharina.taskmanagementsystem.model.Priority;
-import com.basharina.taskmanagementsystem.model.TaskStatus;
-import com.basharina.taskmanagementsystem.model.dto.AdminTaskUpdateDto;
-import com.basharina.taskmanagementsystem.model.dto.TaskAuthorFilter;
-import com.basharina.taskmanagementsystem.model.dto.TaskDataDto;
-import com.basharina.taskmanagementsystem.model.dto.TaskUpdateDto;
+import com.basharina.taskmanagementsystem.model.dto.*;
 import com.basharina.taskmanagementsystem.model.entity.CommentEntity;
 import com.basharina.taskmanagementsystem.model.entity.TaskEntity;
 import com.basharina.taskmanagementsystem.model.entity.UserEntity;
@@ -24,7 +19,7 @@ public interface TaskService {
 
     Page<TaskEntity> getAllByAuthor(UserEntity author, Pageable pageable, TaskAuthorFilter filter);
 
-    Page<TaskEntity> getAllByExecutor(UserEntity executor, Pageable pageable, String header, TaskStatus status, Priority priority);
+    Page<TaskEntity> getAllByExecutor(UserEntity executor, Pageable pageable, TaskExecutorFilter filter);
 
     List<CommentEntity> getComments(Long id);
 

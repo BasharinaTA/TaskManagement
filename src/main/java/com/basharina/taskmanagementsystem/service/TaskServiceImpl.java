@@ -2,12 +2,7 @@ package com.basharina.taskmanagementsystem.service;
 
 import com.basharina.taskmanagementsystem.converter.TaskDataConverter;
 import com.basharina.taskmanagementsystem.exception.BaseException;
-import com.basharina.taskmanagementsystem.model.Priority;
-import com.basharina.taskmanagementsystem.model.TaskStatus;
-import com.basharina.taskmanagementsystem.model.dto.AdminTaskUpdateDto;
-import com.basharina.taskmanagementsystem.model.dto.TaskAuthorFilter;
-import com.basharina.taskmanagementsystem.model.dto.TaskDataDto;
-import com.basharina.taskmanagementsystem.model.dto.TaskUpdateDto;
+import com.basharina.taskmanagementsystem.model.dto.*;
 import com.basharina.taskmanagementsystem.model.entity.CommentEntity;
 import com.basharina.taskmanagementsystem.model.entity.TaskEntity;
 import com.basharina.taskmanagementsystem.model.entity.UserEntity;
@@ -61,8 +56,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Page<TaskEntity> getAllByExecutor(UserEntity executor, Pageable pageable, String header, TaskStatus status, Priority priority) {
-        return taskRepository.findAllByExecutor(executor, pageable, header, status, priority);
+    public Page<TaskEntity> getAllByExecutor(UserEntity executor, Pageable pageable, TaskExecutorFilter filter) {
+        return taskRepository.findAllByExecutor(executor, pageable, filter.getHeader(), filter.getStatus(), filter.getPriority());
     }
 
     @Override
