@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,8 +40,10 @@ public class AdminTaskController {
 
     @Operation(summary = "Добавление задачи")
     @PostMapping
-    public TaskDto addTask(@Valid @RequestBody TaskDataDto task) {
-        return taskConverter.toDto(taskService.addTask(task));
+    public ResponseEntity<TaskDto> addTask(@Valid @RequestBody TaskDataDto task) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(taskConverter.toDto(taskService.addTask(task)));
     }
 
     @Operation(summary = "Редактирование задачи")
@@ -53,6 +56,6 @@ public class AdminTaskController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTask(@PathVariable Long id) {
         taskService.deleteById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
